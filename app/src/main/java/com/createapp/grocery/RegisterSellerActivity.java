@@ -37,14 +37,16 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
     private static final int LOCATION_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 300;
+
     //image pick constants
     private static final int IMAGE_PICK_GALLERY_CODE = 400;
-    private static final int IMAGE_PICK_CAMERA_CODE = 400;
+    private static final int IMAGE_PICK_CAMERA_CODE = 500;
     private ImageButton backBtn, gpsBtn;
     private ImageView profileIv;
     private EditText nameEt, shopNameEt, phoneEt, deliveryFeeEt, countryEt, stateEt,
             cityEt, addressEt, emailEt, passwordEt, cPasswordEt;
     private Button registerBtn;
+
     //permission arrays
     private String[] locationPermissions;
     private String[] cameraPermissions;
@@ -96,6 +98,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
                 //detect current location
                 if (checkLocationPermission()) {
                     //already allowed
+                    detectLocation();
                 } else {
                     //not allowed, request
                     requestLocationPermission();
@@ -135,7 +138,7 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
                             }
                         } else {
                             //gallery clicked
-                            if (checkCameraPermission()) {
+                            if (checkStoragePermission()) {
                                 //storage permission allowed
                                 pickFromGallery();
                             } else {
@@ -169,6 +172,12 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
         Toast.makeText(this, "Please wait...", Toast.LENGTH_LONG).show();
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     }
 
@@ -256,7 +265,8 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
 
     @Override
     public void onProviderDisabled(@NonNull String provider) {
-
+        //gps/location disabled
+        Toast.makeText(this, "Please turn on location//", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -294,13 +304,13 @@ public class RegisterSellerActivity extends AppCompatActivity implements Locatio
 
             case STORAGE_REQUEST_CODE: {
                 if (grantResults.length > 0) {
-                    boolean storageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     if (storageAccepted) {
                         //permission allowed
                         pickFromGallery();
                     } else {
                         //permission denied
-                        Toast.makeText(this, "Storage permissions is necessary...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Storage permission is necessary...", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

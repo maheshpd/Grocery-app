@@ -37,9 +37,11 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
     private static final int LOCATION_REQUEST_CODE = 100;
     private static final int CAMERA_REQUEST_CODE = 200;
     private static final int STORAGE_REQUEST_CODE = 300;
+
     //image pick constants
     private static final int IMAGE_PICK_GALLERY_CODE = 400;
-    private static final int IMAGE_PICK_CAMERA_CODE = 400;
+    private static final int IMAGE_PICK_CAMERA_CODE = 500;
+
     private ImageButton backBtn, gpsBtn;
     private ImageView profileIv;
     private EditText nameEt, phoneEt, countryEt, stateEt, cityEt, addressEt,
@@ -66,7 +68,7 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
         //init ui views
         backBtn = findViewById(R.id.backBtn);
         gpsBtn = findViewById(R.id.gpsBtn);
-        profileIv = findViewById(R.id.gpsBtn);
+        profileIv = findViewById(R.id.profileIv);
         nameEt = findViewById(R.id.nameEt);
         phoneEt = findViewById(R.id.phoneEt);
         countryEt = findViewById(R.id.countryEt);
@@ -98,6 +100,7 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
                 //detect current location
                 if (checkLocationPermission()) {
                     //already allowed
+                    detectLocation();
                 } else {
                     //not allowed, request
                     requestLocationPermission();
@@ -109,6 +112,7 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
             @Override
             public void onClick(View view) {
                 //pick image
+                showImagePickDialog();
             }
         });
 
@@ -143,7 +147,7 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
                             }
                         } else {
                             //gallery clicked
-                            if (checkCameraPermission()) {
+                            if (checkStoragePermission()) {
                                 //storage permission allowed
                                 pickFromGallery();
                             } else {
@@ -177,6 +181,12 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
         Toast.makeText(this, "Please wait...", Toast.LENGTH_LONG).show();
 
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
     }
 
@@ -264,7 +274,8 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
 
     @Override
     public void onProviderDisabled(@NonNull String provider) {
-
+        //gps/location disabled
+        Toast.makeText(this, "Please turn on location//", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -302,13 +313,13 @@ public class RegisterUserActivity extends AppCompatActivity implements LocationL
 
             case STORAGE_REQUEST_CODE: {
                 if (grantResults.length > 0) {
-                    boolean storageAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    boolean storageAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     if (storageAccepted) {
                         //permission allowed
                         pickFromGallery();
                     } else {
                         //permission denied
-                        Toast.makeText(this, "Storage permissions is necessary...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Storage permission is necessary...", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
