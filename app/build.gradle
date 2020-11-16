@@ -34,8 +34,8 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.2'
-    implementation 'com.google.firebase:firebase-auth:19.4.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'com.google.firebase:firebase-auth:20.0.0'
     implementation 'com.google.firebase:firebase-database:19.5.1'
     implementation 'com.google.firebase:firebase-storage:19.2.0'
     testImplementation 'junit:junit:4.13.1'
@@ -44,10 +44,13 @@ dependencies {
 
     implementation platform('com.google.firebase:firebase-bom:25.12.0')
 
+    //image loading from firebase
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
     implementation 'com.google.firebase:firebase-analytics'
 
     //Circel image
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
-    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:'
 }
